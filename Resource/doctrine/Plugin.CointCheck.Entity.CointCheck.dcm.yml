@@ -1,0 +1,20 @@
+Plugin\CointCheck\Entity\CointCheck:
+    type: entity
+    table: plg_coint_check
+    repositoryClass: Plugin\CointCheck\Repository\CointCheckRepository
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            id: true
+            column: coint_check_id
+            generator:
+                strategy: AUTO
+    fields:
+        access_key:
+            type: text
+            nullable: true
+        secret_key:
+            type: text
+            nullable: true

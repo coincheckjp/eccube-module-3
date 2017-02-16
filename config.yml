@@ -1,0 +1,7 @@
+name: CointCheck
+code: CointCheck
+version: 1.0.0
+service:
+    - CointCheckServiceProvider
+orm.path:
+    - /Resource/doctrine
