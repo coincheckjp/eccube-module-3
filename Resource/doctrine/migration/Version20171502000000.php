@@ -20,7 +20,7 @@ use Eccube\Common\Constant;
  */
 class Version20171502000000 extends AbstractMigration
 {
-    const PLG_COINT_CHECK = 'plg_coin_check';
+    const PLG_COIN_CHECK = 'plg_coin_check';
 
     /**
      * Up method.
@@ -48,8 +48,8 @@ class Version20171502000000 extends AbstractMigration
      */
     public function down(Schema $schema)
     {
-        if ($schema->hasTable(self::PLG_COINT_CHECK)) {
-            $schema->dropTable(self::PLG_COINT_CHECK);
+        if ($schema->hasTable(self::PLG_COIN_CHECK)) {
+            $schema->dropTable(self::PLG_COIN_CHECK);
             $schema->dropSequence('plg_coin_check_coin_check_id_seq');
 
             if ($this->connection->getDatabasePlatform()->getName() == 'postgresql') {

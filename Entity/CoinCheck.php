@@ -11,7 +11,6 @@
 namespace Plugin\CoinCheck\Entity;
 
 use Eccube\Entity\AbstractEntity;
-use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Coupon.
