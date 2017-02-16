@@ -20,7 +20,7 @@ use Eccube\Common\Constant;
  */
 class Version20171502000000 extends AbstractMigration
 {
-    const PLG_COINT_CHECK = 'plg_coint_check';
+    const PLG_COINT_CHECK = 'plg_coin_check';
 
     /**
      * Up method.
@@ -50,10 +50,10 @@ class Version20171502000000 extends AbstractMigration
     {
         if ($schema->hasTable(self::PLG_COINT_CHECK)) {
             $schema->dropTable(self::PLG_COINT_CHECK);
-            $schema->dropSequence('plg_coint_check_coint_check_id_seq');
+            $schema->dropSequence('plg_coin_check_coin_check_id_seq');
 
             if ($this->connection->getDatabasePlatform()->getName() == 'postgresql') {
-                $schema->dropSequence('plg_coint_check_coint_check_id_seq');
+                $schema->dropSequence('plg_coin_check_coin_check_id_seq');
             }
             $app = Application::getInstance();
             $repository = $app['orm.em']->getRepository('Eccube\Entity\Payment');
@@ -78,8 +78,8 @@ class Version20171502000000 extends AbstractMigration
      */
     protected function createTable(Schema $schema)
     {
-        $table = $schema->createTable('plg_coint_check');
-        $table->addColumn('coint_check_id', 'integer', array(
+        $table = $schema->createTable('plg_coin_check');
+        $table->addColumn('coin_check_id', 'integer', array(
             'autoincrement' => true,
             'notnull' => true,
         ));
@@ -92,7 +92,7 @@ class Version20171502000000 extends AbstractMigration
             'notnull' => false,
         ));
 
-        $table->setPrimaryKey(array('coint_check_id'));
+        $table->setPrimaryKey(array('coin_check_id'));
     }
 
 }

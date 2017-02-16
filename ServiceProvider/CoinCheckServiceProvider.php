@@ -1,45 +1,45 @@
 <?php
 
 /*
- * This file is part of the CointCheck
+ * This file is part of the CoinCheck
  *
- * Copyright (C) 2017 CointCheck
+ * Copyright (C) 2017 CoinCheck
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Plugin\CointCheck\ServiceProvider;
+namespace Plugin\CoinCheck\ServiceProvider;
 
 use Eccube\Application;
 use Monolog\Handler\FingersCrossed\ErrorLevelActivationStrategy;
 use Monolog\Handler\FingersCrossedHandler;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Logger;
-use Plugin\CointCheck\Form\Type\CointCheckConfigType;
+use Plugin\CoinCheck\Form\Type\CoinCheckConfigType;
 use Silex\Application as BaseApplication;
 use Silex\ServiceProviderInterface;
 use Symfony\Component\Yaml\Yaml;
 
 
-class CointCheckServiceProvider implements ServiceProviderInterface
+class CoinCheckServiceProvider implements ServiceProviderInterface
 {
     public function register(BaseApplication $app)
     {
         // プラグイン用設定画面
-        $app->match('/' . $app['config']['admin_route'] . '/plugin/CointCheck/config', 'Plugin\CointCheck\Controller\ConfigController::index')->bind('plugin_CointCheck_config');
+        $app->match('/' . $app['config']['admin_route'] . '/plugin/CoinCheck/config', 'Plugin\CoinCheck\Controller\ConfigController::index')->bind('plugin_CoinCheck_config');
 
         // 独自コントローラ
-        $app->match('/plugin/[code_name]/hello', 'Plugin\CointCheck\Controller\CointCheckController::index')->bind('plugin_CointCheck_hello');
+        $app->match('/plugin/[code_name]/hello', 'Plugin\CoinCheck\Controller\CoinCheckController::index')->bind('plugin_CoinCheck_hello');
 
         // Form
         $app['form.types'] = $app->share($app->extend('form.types', function ($types) use ($app) {
-            $types[] = new CointCheckConfigType($app);
+            $types[] = new CoinCheckConfigType($app);
             return $types;
         }));
 
-        $app['cointcheck.repository.coupon'] = $app->share(function () use ($app) {
-            return $app['orm.em']->getRepository('Plugin\CointCheck\Entity\CointCheck');
+        $app['coincheck.repository.coupon'] = $app->share(function () use ($app) {
+            return $app['orm.em']->getRepository('Plugin\CoinCheck\Entity\CoinCheck');
         });
 
         // Form Extension
@@ -82,14 +82,14 @@ class CointCheckServiceProvider implements ServiceProviderInterface
         // });
 
         // ログファイル設定
-        $app['monolog.CointCheck'] = $app->share(function ($app) {
+        $app['monolog.CoinCheck'] = $app->share(function ($app) {
 
-            $logger = new $app['monolog.logger.class']('plugin.CointCheck');
+            $logger = new $app['monolog.logger.class']('plugin.CoinCheck');
 
-            $file = $app['config']['root_dir'] . '/app/log/CointCheck.log';
+            $file = $app['config']['root_dir'] . '/app/log/CoinCheck.log';
             $RotateHandler = new RotatingFileHandler($file, $app['config']['log']['max_files'], Logger::INFO);
             $RotateHandler->setFilenameFormat(
-                'CointCheck_{date}',
+                'CoinCheck_{date}',
                 'Y-m-d'
             );
 

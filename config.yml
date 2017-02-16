@@ -1,8 +1,8 @@
-name: CointCheck
+name: CoinCheck
 event: Event
-code: CointCheck
+code: CoinCheck
 version: 1.0.0
 service:
-    - CointCheckServiceProvider
+    - CoinCheckServiceProvider
 orm.path:
     - /Resource/doctrine

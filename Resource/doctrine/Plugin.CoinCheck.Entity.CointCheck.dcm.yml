@@ -1,14 +1,14 @@
-Plugin\CointCheck\Entity\CointCheck:
+Plugin\CoinCheck\Entity\CoinCheck:
     type: entity
-    table: plg_coint_check
-    repositoryClass: Plugin\CointCheck\Repository\CointCheckRepository
+    table: plg_coin_check
+    repositoryClass: Plugin\CoinCheck\Repository\CoinCheckRepository
     id:
         id:
             type: integer
             nullable: false
             unsigned: false
             id: true
-            column: coint_check_id
+            column: coin_check_id
             generator:
                 strategy: AUTO
     fields:

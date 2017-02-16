@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\CointCheck\Entity;
+namespace Plugin\CoinCheck\Entity;
 
 use Eccube\Entity\AbstractEntity;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -16,7 +16,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * Coupon.
  */
-class CointCheck extends AbstractEntity
+class CoinCheck extends AbstractEntity
 {
     /**
      * @var int

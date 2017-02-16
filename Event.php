@@ -8,11 +8,11 @@
  * file that was distributed with this source code.
  */
 
-namespace Plugin\CointCheck;
+namespace Plugin\CoinCheck;
 
 use Eccube\Application;
 use Eccube\Event\TemplateEvent;
-use Plugin\CointCheck\Util\Version;
+use Plugin\CoinCheck\Util\Version;
 
 /**
  * Class Event.
@@ -52,7 +52,7 @@ class Event
         if ($payment == 'ビットコイン決済') {
             // このタグを前後に分割し、間に項目を入れ込む
             // 元の合計金額は書き込み済みのため再度書き込みを行う
-            $snipet = $app['twig']->getLoader()->getSource('Coupon/Resource/template/default/discount_shopping_item.twig');
+            $snipet = $app['twig']->getLoader()->getSource('CoinCheck/Resource/template/default/bitcoint.twig');
             $search = '<div id="summary_box__result" class="total_amount">';
             $replace = $search.$snipet;
             $source = str_replace($search, $replace, $source);

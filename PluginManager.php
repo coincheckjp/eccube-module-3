@@ -1,15 +1,15 @@
 <?php
 
 /*
- * This file is part of the CointCheck
+ * This file is part of the CoinCheck
  *
- * Copyright (C) 2017 CointCheck
+ * Copyright (C) 2017 CoinCheck
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
 
-namespace Plugin\CointCheck;
+namespace Plugin\CoinCheck;
 
 use Eccube\Plugin\AbstractPluginManager;
 
