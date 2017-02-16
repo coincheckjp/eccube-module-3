@@ -1,4 +1,5 @@
 name: CointCheck
+event: Event
 code: CointCheck
 version: 1.0.0
 service:
