@@ -11,9 +11,10 @@
 namespace Plugin\CoinCheck;
 
 use Eccube\Application;
-use Eccube\Common\Constant;
 use Eccube\Event\TemplateEvent;
-use Plugin\CoinCheck\Util\Version;
+use Plugin\CoinCheck\Entity\CoinCheck;
+
+require_once 'Request.php';
 
 /**
  * Class Event.
@@ -61,6 +62,9 @@ class Event
             $replace = $search.$snipet;
             $source = str_replace($search, $replace, $source);
             $parameters['Order'] = $Order;
+            /* @var $CoinCheck \Plugin\CoinCheck\Entity\CoinCheck */
+            $CoinCheck = $app['plugin.repository.coincheck']->find(1);
+            $this->getButtonObject($CoinCheck, $Order);
         }
         //$event->setSource($source);
     }
@@ -71,29 +75,35 @@ class Event
     }
 
     /* 決済用のボタン作成 */
-    private function getButtonObject($arrModuleSetting, $arrOrder)
+    private function getButtonObject(CoinCheck $config, $Order)
     {
+        /* @var $Order \Eccube\Entity\Order */
+        $orderId = $Order->getId();
         $strUrl = self::MDL_COINCHECK_API_BASE . '/ec/buttons';
         $intNonce = time();
-        $strCallbackUrl = HTTPS_URL . USER_DIR . "pg_coincheck_recv.php?recv_secret=" . $arrModuleSetting["recv_secret"] . "&order_id=" . $arrOrder["order_id"];
+        $baseUri = $this->app['request']->getUriForPath('/');
+        if (!strpos('https', $baseUri)) {
+            $baseUri = str_replace('http', 'https', $baseUri);
+        }
+        $strCallbackUrl = $baseUri . "/coincheck/callback" . "?recv_secret=" . $config->getId() . "&order_id=" . $orderId;
         $arrQuery = array("button" => array(
-            "name" => ("注文 #" . $arrOrder["order_id"]),
-            "email" => $arrOrder["order_email"],
+            "name" => ("注文 #" . $orderId),
+            "email" => $Order->getEmail(),
             "currency" => "JPY",
-            "amount" => $arrOrder["payment_total"],
+            "amount" => $Order->getPaymentTotal(),
             "callback_url" => $strCallbackUrl,
-            "success_url" => $this->getLocation(SHOPPING_COMPLETE_URLPATH),
+            "success_url" => $baseUri . $this->app->url('shopping_complete'),
             "max_times" => 1
         ));
-        $strAccessKey = $arrModuleSetting["access_key"];
-        $strAccessSecret = $arrModuleSetting["access_secret"];
+        $strAccessKey = $config->getAccessKey();
+        $strAccessSecret = $config->getSecretKey();
         $strMessage = $intNonce . $strUrl . http_build_query($arrQuery);
 
         # hmacで署名
         $strSignature = hash_hmac("sha256", $strMessage, $strAccessSecret);
 
         # http request
-        $objReq = new HTTP_Request($strUrl);
+        $objReq = new \HTTP_Request($strUrl);
         $objReq->setMethod('POST');
         $objReq->addHeader("ACCESS-KEY", $strAccessKey);
         $objReq->addHeader("ACCESS-NONCE", $intNonce);
@@ -101,9 +111,9 @@ class Event
         $objReq->setBody(http_build_query($arrQuery));
         $objReq->sendRequest();
         $arrJson = json_decode($objReq->getResponseBody(), true);
-        $this->buttonHtml = $arrJson["button"]["html_tag"];
+        dump($arrJson);
+        die();
     }
-
 
     /* 注文のデータが一貫しており処理可能なものであることを確認する */
     private function validateOrderConsistency($arrOrder)

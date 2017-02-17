@@ -14,6 +14,7 @@ use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 use Eccube\Application;
 use Eccube\Common\Constant;
+use Eccube\Entity\Payment;
 
 /**
  * Version20171502000000.
@@ -30,14 +31,13 @@ class Version20171502000000 extends AbstractMigration
     public function up(Schema $schema)
     {
         $app = Application::getInstance();
-        $repository = $app['orm.em']->getRepository('Eccube\Entity\Payment');
-        $entities = $repository->createQueryBuilder('p')
-            ->select('max(p.id)')
-            ->getQuery()
-            ->getSingleResult();
-        //get max id of payment table and plus 1 for new id of bitcoint.
-        $max = $entities[1] + 1;
-        $this->addSql("INSERT INTO dtb_payment (payment_id, payment_method, charge, rule_max, rank, fix_flg, del_flg, creator_id, create_date, update_date, payment_image, charge_flg, rule_min) VALUES ($max, 'ビットコイン決済', 0, NULL, 1, 1, 0, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, NULL, 1, 0);");
+        $Creator = $app['eccube.repository.member']->find(2);
+        $Payment = new Payment();
+        $Payment->setMethod('ビットコイン決済');
+        $Payment->setDelFlg(Constant::DISABLED);
+        $Payment->setCreator($Creator);
+        $app['orm.em']->persist($Payment);
+        $app['orm.em']->flush($Payment);
         $this->createTable($schema);
     }
 
@@ -59,15 +59,9 @@ class Version20171502000000 extends AbstractMigration
             $repository = $app['orm.em']->getRepository('Eccube\Entity\Payment');
             /* @var $Payment \Eccube\Entity\Payment */
             $Payment = $repository->findOneBy(array('method' => 'ビットコイン決済'));
-            $repository = $app['orm.em']->getRepository('Eccube\Entity\PaymentOption');
-            //remove payment option
-            $PaymentOptions = $repository->findBy(array('Payment' => $Payment));
-            foreach ($PaymentOptions as $option) {
-                $app['orm.em']->remove($option);
-                $app['orm.em']->flush($option);
-            }
+            $Payment->setDelFlg(Constant::ENABLED);
             //remove payment
-            $app['orm.em']->remove($Payment);
+            $app['orm.em']->persist($Payment);
             $app['orm.em']->flush($Payment);
         }
     }

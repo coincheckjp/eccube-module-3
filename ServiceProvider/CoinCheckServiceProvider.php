@@ -38,7 +38,7 @@ class CoinCheckServiceProvider implements ServiceProviderInterface
             return $types;
         }));
 
-        $app['coincheck.repository.coupon'] = $app->share(function () use ($app) {
+        $app['plugin.repository.coincheck'] = $app->share(function () use ($app) {
             return $app['orm.em']->getRepository('Plugin\CoinCheck\Entity\CoinCheck');
         });
 

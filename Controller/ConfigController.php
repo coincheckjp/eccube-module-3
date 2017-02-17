@@ -27,7 +27,7 @@ class ConfigController
      */
     public function index(Application $app, Request $request)
     {
-        $CoinCheck = $app['coincheck.repository.coupon']->find(1);
+        $CoinCheck = $app['plugin.repository.coincheck']->find(1);
         if (empty($CoinCheck)) {
             $CoinCheck = new CoinCheck();
         }
