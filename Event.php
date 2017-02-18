@@ -53,20 +53,18 @@ class Event
         /* @var $Order \Eccube\Entity\Order */
         $Order = $parameters['Order'];
         $payment = $Order->getPaymentMethod();
-        $source = null;
         if ($payment == 'ビットコイン決済') {
-            // このタグを前後に分割し、間に項目を入れ込む
-            // 元の合計金額は書き込み済みのため再度書き込みを行う
-            $snipet = $app['twig']->getLoader()->getSource('CoinCheck/Resource/template/default/bitcoin.twig');
-            $search = '<div id="summary_box__result" class="total_amount">';
-            $replace = $search.$snipet;
-            $source = str_replace($search, $replace, $source);
-            $parameters['Order'] = $Order;
             /* @var $CoinCheck \Plugin\CoinCheck\Entity\CoinCheck */
             $CoinCheck = $app['plugin.repository.coincheck']->find(1);
-            $this->getButtonObject($CoinCheck, $Order);
+            $button = $this->getButtonObject($CoinCheck, $Order);
+            if (!empty($button['success'])) {
+                $source = $event->getSource();
+                $search = '<button id="order-button" type="submit" class="btn btn-primary btn-block prevention-btn prevention-mask">注文する</button>';
+                $replace = $button['button']['html_tag'];
+                $source = str_replace($search, $replace, $source);
+                $event->setSource($source);
+            }
         }
-        //$event->setSource($source);
     }
 
     /* テンプレートを設定する。携帯ははじく */
@@ -85,14 +83,14 @@ class Event
         if (!strpos('https', $baseUri)) {
             $baseUri = str_replace('http', 'https', $baseUri);
         }
-        $strCallbackUrl = $baseUri . "/coincheck/callback" . "?recv_secret=" . $config->getId() . "&order_id=" . $orderId;
+        $strCallbackUrl = $this->app->url('coincheck_callback') . "?recv_secret=" . $config->getSecretKey() . "&order_id=" . $orderId;
         $arrQuery = array("button" => array(
             "name" => ("注文 #" . $orderId),
             "email" => $Order->getEmail(),
             "currency" => "JPY",
             "amount" => $Order->getPaymentTotal(),
             "callback_url" => $strCallbackUrl,
-            "success_url" => $baseUri . $this->app->url('shopping_complete'),
+            "success_url" => $this->app->url('shopping_complete'),
             "max_times" => 1
         ));
         $strAccessKey = $config->getAccessKey();
@@ -111,34 +109,6 @@ class Event
         $objReq->setBody(http_build_query($arrQuery));
         $objReq->sendRequest();
         $arrJson = json_decode($objReq->getResponseBody(), true);
-        dump($arrJson);
-        die();
-    }
-
-    /* 注文のデータが一貫しており処理可能なものであることを確認する */
-    private function validateOrderConsistency($arrOrder)
-    {
-        switch ($arrOrder['status']) {
-            case ORDER_PENDING:
-                // 対象ケース。以降で処理する
-                break;
-
-            // 会計済み。許容しうる
-            case ORDER_NEW:
-            case ORDER_PRE_END:
-                SC_Response_Ex::sendRedirect(SHOPPING_COMPLETE_URLPATH);
-                SC_Response_Ex::actionExit();
-                break;
-
-            // coincheck の決済では発生しない
-            default:
-                SC_Utils_Ex::sfDispSiteError(FREE_ERROR_MSG, '', true, '注文情報の状態が不正です。<br />この手続きは無効となりました。');
-        }
-
-        $objPayment = new SC_Helper_Payment_Ex();
-        $arrPayment = $objPayment->get($arrOrder['payment_id']);
-        if ($arrPayment === null || $arrPayment['module_id'] !== MDL_COINCHECK_ID) {
-            SC_Utils_Ex::sfDispSiteError(FREE_ERROR_MSG, '', true, '支払方法が不正です。<br />この手続きは無効となりました。');
-        }
+        return $arrJson;
     }
 }

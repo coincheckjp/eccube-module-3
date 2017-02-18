@@ -30,7 +30,7 @@ class CoinCheckServiceProvider implements ServiceProviderInterface
         $app->match('/' . $app['config']['admin_route'] . '/plugin/CoinCheck/config', 'Plugin\CoinCheck\Controller\ConfigController::index')->bind('plugin_CoinCheck_config');
 
         // 独自コントローラ
-        $app->match('/plugin/[code_name]/hello', 'Plugin\CoinCheck\Controller\CoinCheckController::index')->bind('plugin_CoinCheck_hello');
+        $app->match('/coincheck/callback', 'Plugin\CoinCheck\Controller\CoinCheckController::receive')->bind('coincheck_callback');
 
         // Form
         $app['form.types'] = $app->share($app->extend('form.types', function ($types) use ($app) {
