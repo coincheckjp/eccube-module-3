@@ -20,7 +20,7 @@
 //
 // $Id: SMTP.php 304535 2010-10-20 06:48:06Z jon $
 
-require_once dirname(__FILE__) . '/../PEAR.php';
+require_once 'PEAR.php';
 require_once 'Socket.php';
 
 /**

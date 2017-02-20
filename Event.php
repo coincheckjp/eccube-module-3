@@ -79,10 +79,6 @@ class Event
         $orderId = $Order->getId();
         $strUrl = self::MDL_COINCHECK_API_BASE . '/ec/buttons';
         $intNonce = time();
-        $baseUri = $this->app['request']->getUriForPath('/');
-        if (!strpos('https', $baseUri)) {
-            $baseUri = str_replace('http', 'https', $baseUri);
-        }
         $strCallbackUrl = $this->app->url('coincheck_callback') . "?recv_secret=" . $config->getSecretKey() . "&order_id=" . $orderId;
         $arrQuery = array("button" => array(
             "name" => ("注文 #" . $orderId),
@@ -100,7 +96,6 @@ class Event
         # hmacで署名
         $strSignature = hash_hmac("sha256", $strMessage, $strAccessSecret);
 
-        # http request
         $objReq = new \HTTP_Request($strUrl);
         $objReq->setMethod('POST');
         $objReq->addHeader("ACCESS-KEY", $strAccessKey);
@@ -109,6 +104,7 @@ class Event
         $objReq->setBody(http_build_query($arrQuery));
         $objReq->sendRequest();
         $arrJson = json_decode($objReq->getResponseBody(), true);
+        dump($arrJson);
         return $arrJson;
     }
 }
