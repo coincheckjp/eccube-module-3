@@ -35,6 +35,7 @@ class Version20171502000000 extends AbstractMigration
         $Payment = new Payment();
         $Payment->setMethod('ビットコイン決済');
         $Payment->setDelFlg(Constant::DISABLED);
+        $Payment->setRank(0);
         $Payment->setCreator($Creator);
         $app['orm.em']->persist($Payment);
         $app['orm.em']->flush($Payment);

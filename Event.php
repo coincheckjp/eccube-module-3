@@ -60,7 +60,8 @@ class Event
             if (!empty($button['success'])) {
                 $source = $event->getSource();
                 $search = '<button id="order-button" type="submit" class="btn btn-primary btn-block prevention-btn prevention-mask">注文する</button>';
-                $replace = $button['button']['html_tag'];
+                $snippet =  $snipet = $app['twig']->getLoader()->getSource('CoinCheck/Resource/template/default/bitcoin.twig');
+                $replace = $button['button']['html_tag'].$snippet;
                 $source = str_replace($search, $replace, $source);
                 $event->setSource($source);
             }
@@ -79,14 +80,14 @@ class Event
         $orderId = $Order->getId();
         $strUrl = self::MDL_COINCHECK_API_BASE . '/ec/buttons';
         $intNonce = time();
-        $strCallbackUrl = $this->app->url('coincheck_callback') . "?recv_secret=" . $config->getSecretKey() . "&order_id=" . $orderId;
+        $successUrl = $this->app->url('coincheck_callback') . "?recv_secret=" . $config->getSecretKey() . "&order_id=" . $orderId;
         $arrQuery = array("button" => array(
             "name" => ("注文 #" . $orderId),
             "email" => $Order->getEmail(),
             "currency" => "JPY",
             "amount" => $Order->getPaymentTotal(),
-            "callback_url" => $strCallbackUrl,
-            "success_url" => $this->app->url('shopping_complete'),
+            //"callback_url" => $strCallbackUrl,
+            "success_url" => $successUrl,
             "max_times" => 1
         ));
         $strAccessKey = $config->getAccessKey();
@@ -104,7 +105,7 @@ class Event
         $objReq->setBody(http_build_query($arrQuery));
         $objReq->sendRequest();
         $arrJson = json_decode($objReq->getResponseBody(), true);
-        dump($arrJson);
+
         return $arrJson;
     }
 }

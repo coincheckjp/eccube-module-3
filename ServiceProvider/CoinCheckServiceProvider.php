@@ -32,6 +32,8 @@ class CoinCheckServiceProvider implements ServiceProviderInterface
         // 独自コントローラ
         $app->match('/coincheck/callback', 'Plugin\CoinCheck\Controller\CoinCheckController::receive')->bind('coincheck_callback');
 
+        $app->match('/coincheck/delivery', 'Plugin\CoinCheck\Controller\CoinCheckController::saveDelivery')->bind('plugin_coincheck_delivery');
+
         // Form
         $app['form.types'] = $app->share($app->extend('form.types', function ($types) use ($app) {
             $types[] = new CoinCheckConfigType($app);
