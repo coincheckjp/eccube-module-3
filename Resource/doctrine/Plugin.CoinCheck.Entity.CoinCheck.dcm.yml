@@ -1,0 +1,20 @@
+Plugin\CoinCheck\Entity\CoinCheck:
+    type: entity
+    table: plg_coin_check
+    repositoryClass: Plugin\CoinCheck\Repository\CoinCheckRepository
+    id:
+        id:
+            type: integer
+            nullable: false
+            unsigned: false
+            id: true
+            column: coin_check_id
+            generator:
+                strategy: AUTO
+    fields:
+        access_key:
+            type: text
+            nullable: true
+        secret_key:
+            type: text
+            nullable: true

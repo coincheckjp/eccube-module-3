@@ -1,0 +1,8 @@
+name: CoinCheck
+event: Event
+code: CoinCheck
+version: 1.0.0
+service:
+    - CoinCheckServiceProvider
+orm.path:
+    - /Resource/doctrine
