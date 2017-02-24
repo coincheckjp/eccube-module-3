@@ -68,11 +68,6 @@ class Event
         }
     }
 
-    /* テンプレートを設定する。携帯ははじく */
-    private function selectTemplate()
-    {
-    }
-
     /* 決済用のボタン作成 */
     private function getButtonObject(CoinCheck $config, $Order)
     {
@@ -86,7 +81,6 @@ class Event
             "email" => $Order->getEmail(),
             "currency" => "JPY",
             "amount" => $Order->getPaymentTotal(),
-            //"callback_url" => $strCallbackUrl,
             "success_url" => $successUrl,
             "max_times" => 1
         ));

@@ -25,7 +25,7 @@ class CoinCheckController
     private $sessionOrderKey = 'eccube.front.shopping.order.id';
 
     /**
-     *
+     * call back handle.
      * @param Application $app
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
