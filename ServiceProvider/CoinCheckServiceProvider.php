@@ -21,7 +21,6 @@ use Silex\Application as BaseApplication;
 use Silex\ServiceProviderInterface;
 use Symfony\Component\Yaml\Yaml;
 
-
 class CoinCheckServiceProvider implements ServiceProviderInterface
 {
     public function register(BaseApplication $app)
