@@ -57,14 +57,16 @@ class Event
         if ($payment == 'ビットコイン決済') {
             /* @var $CoinCheck \Plugin\CoinCheck\Entity\CoinCheck */
             $CoinCheck = $app['plugin.repository.coincheck']->find(1);
-            $button = $this->getButtonObject($CoinCheck, $Order);
-            if (!empty($button['success'])) {
-                $source = $event->getSource();
-                $search = '<button id="order-button" type="submit" class="btn btn-primary btn-block prevention-btn prevention-mask">注文する</button>';
-                $snippet =  $snipet = $app['twig']->getLoader()->getSource('CoinCheck/Resource/template/default/bitcoin.twig');
-                $replace = $button['button']['html_tag'].$snippet;
-                $source = str_replace($search, $replace, $source);
-                $event->setSource($source);
+            if (!empty($CoinCheck)) {
+                $button = $this->getButtonObject($CoinCheck, $Order);
+                if (!empty($button['success'])) {
+                    $source = $event->getSource();
+                    $search = '<button id="order-button" type="submit" class="btn btn-primary btn-block prevention-btn prevention-mask">注文する</button>';
+                    $snippet =  $snipet = $app['twig']->getLoader()->getSource('CoinCheck/Resource/template/default/bitcoin.twig');
+                    $replace = $button['button']['html_tag'].$snippet;
+                    $source = str_replace($search, $replace, $source);
+                    $event->setSource($source);
+                }
             }
         }
     }
