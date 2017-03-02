@@ -13,9 +13,10 @@ namespace Plugin\CoinCheck;
 use Eccube\Application;
 use Eccube\Event\TemplateEvent;
 use Plugin\CoinCheck\Entity\CoinCheck;
+use Symfony\Component\Config\Definition\Exception\Exception;
 
 set_include_path(__DIR__.'/pear');
-require_once "HTTP/Request2.php";
+require_once "HTTP/Request.php";
 
 /**
  * Class Event.
@@ -93,15 +94,19 @@ class Event
         # hmacで署名
         $strSignature = hash_hmac("sha256", $strMessage, $strAccessSecret);
 
-        $objReq = new \HTTP_Request2($strUrl);
-        $objReq->setMethod('POST');
-        $objReq->setHeader("ACCESS-KEY", $strAccessKey);
-        $objReq->setHeader("ACCESS-NONCE", $intNonce);
-        $objReq->setHeader("ACCESS-SIGNATURE", $strSignature);
-        $objReq->setBody(http_build_query($arrQuery));
-        $objReq = $objReq->send();
-        $arrJson = json_decode($objReq->getBody(), true);
+        try {
+            $objReq = new \HTTP_Request($strUrl);
+            $objReq->setMethod('POST');
+            $objReq->addHeader("ACCESS-KEY", $strAccessKey);
+            $objReq->addHeader("ACCESS-NONCE", $intNonce);
+            $objReq->addHeader("ACCESS-SIGNATURE", $strSignature);
+            $objReq->setBody(http_build_query($arrQuery));
+            $objReq->sendRequest();
+            $arrJson = json_decode($objReq->getResponseBody(), true);
 
-        return $arrJson;
+            return $arrJson;
+        } catch (Exception $e) {
+            return null;
+        }
     }
 }
