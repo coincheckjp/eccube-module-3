@@ -13,9 +13,10 @@ namespace Plugin\CoinCheck;
 use Eccube\Application;
 use Eccube\Event\TemplateEvent;
 use Plugin\CoinCheck\Entity\CoinCheck;
+use Symfony\Component\Config\Definition\Exception\Exception;
 
 set_include_path(__DIR__.'/pear');
-require_once "HTTP/Request2.php";
+require_once "HTTP/Request.php";
 
 /**
  * Class Event.
@@ -93,29 +94,19 @@ class Event
         # hmacで署名
         $strSignature = hash_hmac("sha256", $strMessage, $strAccessSecret);
 
-        $objReq = new \HTTP_Request2($strUrl);
-        //if php version 7.0.x do nothing
-        if (version_compare(PHP_VERSION, '7.0.0') >= 0) {}
-        else {
-            //if set up certificate curl.cainfo in php.ini
-            if (ini_get('curl.cainfo') != "") {
-                $objReq->setAdapter('curl');
-            } else {
-                //if not setup certificate . set ssl verify is false
-                $objReq->setConfig(array(
-                    'ssl_verify_peer' => false
-                ));
-            }
+        try {
+            $objReq = new \HTTP_Request($strUrl);
+            $objReq->setMethod('POST');
+            $objReq->addHeader("ACCESS-KEY", $strAccessKey);
+            $objReq->addHeader("ACCESS-NONCE", $intNonce);
+            $objReq->addHeader("ACCESS-SIGNATURE", $strSignature);
+            $objReq->setBody(http_build_query($arrQuery));
+            $objReq->sendRequest();
+            $arrJson = json_decode($objReq->getResponseBody(), true);
+
+            return $arrJson;
+        } catch (Exception $e) {
+            return null;
         }
-
-        $objReq->setMethod('POST');
-        $objReq->setHeader("ACCESS-KEY", $strAccessKey);
-        $objReq->setHeader("ACCESS-NONCE", $intNonce);
-        $objReq->setHeader("ACCESS-SIGNATURE", $strSignature);
-        $objReq->setBody(http_build_query($arrQuery));
-        $objReq = $objReq->send();
-        $arrJson = json_decode($objReq->getBody(), true);
-
-        return $arrJson;
     }
 }
