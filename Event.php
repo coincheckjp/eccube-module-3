@@ -94,6 +94,20 @@ class Event
         $strSignature = hash_hmac("sha256", $strMessage, $strAccessSecret);
 
         $objReq = new \HTTP_Request2($strUrl);
+        //if php version 7.0.x do nothing
+        if (version_compare(PHP_VERSION, '7.0.0') >= 0) {}
+        else {
+            //if set up certificate curl.cainfo in php.ini
+            if (ini_get('curl.cainfo') != "") {
+                $objReq->setAdapter('curl');
+            } else {
+                //if not setup certificate . set ssl verify is false
+                $objReq->setConfig(array(
+                    'ssl_verify_peer' => false
+                ));
+            }
+        }
+
         $objReq->setMethod('POST');
         $objReq->setHeader("ACCESS-KEY", $strAccessKey);
         $objReq->setHeader("ACCESS-NONCE", $intNonce);
