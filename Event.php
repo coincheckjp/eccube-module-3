@@ -80,14 +80,14 @@ class Event
         $strUrl = self::MDL_COINCHECK_API_BASE . '/ec/buttons';
         $intNonce = time();
         $successUrl = $this->app->url('coincheck_success') . "?recv_secret=" . $config->getSecretKey() . "&order_id=" . $orderId;
-        $callbaclUrl = $this->app->url('coincheck_callback') . "?recv_secret=" . $config->getSecretKey() . "&order_id=" . $orderId;
+        $callbackUrl = $this->app->url('coincheck_callback') . "?recv_secret=" . $config->getSecretKey() . "&order_id=" . $orderId;
         $arrQuery = array("button" => array(
             "name" => ("注文 #" . $orderId),
             "email" => $Order->getEmail(),
             "currency" => "JPY",
             "amount" => $Order->getPaymentTotal(),
             "success_url" => $successUrl,
-            "callback_url" => $callbaclUrl,
+            "callback_url" => $callbackUrl,
             "max_times" => 1
         ));
         $strAccessKey = $config->getAccessKey();
