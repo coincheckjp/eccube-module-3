@@ -29,7 +29,8 @@ class CoinCheckServiceProvider implements ServiceProviderInterface
         $app->match('/' . $app['config']['admin_route'] . '/plugin/CoinCheck/config', 'Plugin\CoinCheck\Controller\ConfigController::index')->bind('plugin_CoinCheck_config');
 
         // 独自コントローラ
-        $app->match('/coincheck/callback', 'Plugin\CoinCheck\Controller\CoinCheckController::receive')->bind('coincheck_callback');
+        $app->match('/coincheck/success', 'Plugin\CoinCheck\Controller\CoinCheckController::success')->bind('coincheck_success');
+        $app->match('/coincheck/callback', 'Plugin\CoinCheck\Controller\CoinCheckController::callback')->bind('coincheck_callback');
 
         $app->match('/coincheck/delivery', 'Plugin\CoinCheck\Controller\CoinCheckController::saveDelivery')->bind('plugin_coincheck_delivery');
 

@@ -30,7 +30,7 @@ class CoinCheckController
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function receive(Application $app, Request $request)
+    public function success(Application $app, Request $request)
     {
         $CoinCheck = $app['plugin.repository.coincheck']->find(1);
         $orderId = $request->get('order_id');
@@ -49,6 +49,7 @@ class CoinCheckController
             //$app['eccube.service.shopping']->setFormData($Order, $data);
             // 購入処理
             $app['eccube.service.shopping']->processPurchase($Order);
+            $Order->setOrderStatus($app['config']['order_pre_end']);
             $em->flush();
             $em->getConnection()->commit();
 
@@ -62,6 +63,28 @@ class CoinCheckController
             $MailHistory = $app['eccube.service.shopping']->sendOrderMail($Order);
 
             return $app->redirect($app->url('shopping_complete'));
+        }
+    }
+
+    /**
+     * call back handle.
+     * @param Application $app
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function callback(Application $app, Request $request)
+    {
+        $CoinCheck = $app['plugin.repository.coincheck']->find(1);
+        $orderId = $request->get('order_id');
+        $secretKey = $request->get('recv_secret');
+        /* @var $Order \Eccube\Entity\Order */
+        $Order = $app['eccube.repository.order']->find($orderId);
+        if ($CoinCheck->getSecretKey() == $secretKey) {
+            $em = $app['orm.em'];
+            $em->getConnection()->beginTransaction();
+            $Order->setOrderStatus($app['config']['order_pre_end']);
+            $em->flush();
+            $em->getConnection()->commit();
         }
     }
 
