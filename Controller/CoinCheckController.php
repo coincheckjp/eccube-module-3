@@ -49,7 +49,8 @@ class CoinCheckController
             //$app['eccube.service.shopping']->setFormData($Order, $data);
             // 購入処理
             $app['eccube.service.shopping']->processPurchase($Order);
-            $Order->setOrderStatus($app['config']['order_pre_end']);
+            $Status = $app['eccube.repository.order_status']->find($app['config']['order_pre_end']);
+            $Order->setOrderStatus($Status);
             $em->flush();
             $em->getConnection()->commit();
 
@@ -82,7 +83,8 @@ class CoinCheckController
         if ($CoinCheck->getSecretKey() == $secretKey) {
             $em = $app['orm.em'];
             $em->getConnection()->beginTransaction();
-            $Order->setOrderStatus($app['config']['order_pre_end']);
+            $Status = $app['eccube.repository.order_status']->find($app['config']['order_pre_end']);
+            $Order->setOrderStatus($Status);
             $em->flush();
             $em->getConnection()->commit();
         }
